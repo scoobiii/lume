@@ -1,0 +1,227 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedOwner(userId) {
+      return isSignedIn() &&
+        request.auth.uid == userId &&
+        request.auth.token.email_verified == true;
+    }
+
+    function isValidAudit(data, userId) {
+      return data.keys().hasAll([
+          'auditId',
+          'ownerId',
+          'imageLabel',
+          'suppliedBy',
+          'suppliedDate',
+          'sourceName',
+          'sourceUrl',
+          'imageSha256',
+          'tierLevel',
+          'overallStatus',
+          'looseWireAreaPercent',
+          'exposedCopperAreaPercent',
+          'objectsCount',
+          'vucExecutionId',
+          'vucProofHash',
+          'vucVerified',
+          'createdAt'
+        ]) &&
+        data.keys().hasOnly([
+          'auditId',
+          'ownerId',
+          'imageLabel',
+          'suppliedBy',
+          'suppliedDate',
+          'sourceName',
+          'sourceUrl',
+          'imageSha256',
+          'tierLevel',
+          'overallStatus',
+          'looseWireAreaPercent',
+          'exposedCopperAreaPercent',
+          'objectsCount',
+          'vucExecutionId',
+          'vucProofHash',
+          'vucVerified',
+          'patchVersion',
+          'summaryNote',
+          'sourceType',
+          'createdAt'
+        ]) &&
+        isValidId(data.auditId) &&
+        data.ownerId is string && data.ownerId == userId &&
+        data.imageLabel is string && data.imageLabel.size() >= 1 && data.imageLabel.size() <= 200 &&
+        data.suppliedBy is string && data.suppliedBy.size() >= 1 && data.suppliedBy.size() <= 200 &&
+        data.suppliedDate is string && data.suppliedDate.size() >= 4 && data.suppliedDate.size() <= 40 &&
+        data.sourceName is string && data.sourceName.size() >= 1 && data.sourceName.size() <= 200 &&
+        data.sourceUrl is string && data.sourceUrl.size() <= 1000 &&
+        data.imageSha256 is string && data.imageSha256.size() >= 10 && data.imageSha256.size() <= 120 &&
+        data.tierLevel in ['TIER_I', 'TIER_II', 'TIER_III', 'TIER_IV'] &&
+        data.overallStatus in ['NON_COMPLIANT', 'PARTIAL', 'COMPLIANT'] &&
+        data.looseWireAreaPercent is number && data.looseWireAreaPercent >= 0 && data.looseWireAreaPercent <= 100 &&
+        data.exposedCopperAreaPercent is number && data.exposedCopperAreaPercent >= 0 && data.exposedCopperAreaPercent <= 100 &&
+        data.objectsCount is int && data.objectsCount >= 0 && data.objectsCount <= 1000 &&
+        data.vucExecutionId is string && data.vucExecutionId.size() >= 1 && data.vucExecutionId.size() <= 128 &&
+        data.vucProofHash is string && data.vucProofHash.size() >= 1 && data.vucProofHash.size() <= 128 &&
+        data.vucVerified is bool &&
+        (!('patchVersion' in data) || (data.patchVersion is string && data.patchVersion.size() <= 32)) &&
+        (!('summaryNote' in data) || (data.summaryNote is string && data.summaryNote.size() <= 2000)) &&
+        (!('sourceType' in data) || data.sourceType in ['image', 'document', 'url', 'repository']) &&
+        data.createdAt is timestamp;
+    }
+
+    function isValidCommit(data, userId) {
+      return data.keys().hasAll([
+          'commitId',
+          'ownerId',
+          'version',
+          'shortHash',
+          'branch',
+          'author',
+          'message',
+          'tierLevel',
+          'ncsResolvedCount',
+          'vucProofHash',
+          'contentPreview',
+          'createdAt'
+        ]) &&
+        data.keys().hasOnly([
+          'commitId',
+          'ownerId',
+          'version',
+          'shortHash',
+          'branch',
+          'author',
+          'message',
+          'tierLevel',
+          'ncsResolvedCount',
+          'vucProofHash',
+          'contentPreview',
+          'createdAt'
+        ]) &&
+        isValidId(data.commitId) &&
+        data.ownerId is string && data.ownerId == userId &&
+        data.version is string && data.version.size() >= 1 && data.version.size() <= 32 &&
+        data.shortHash is string && data.shortHash.size() >= 4 && data.shortHash.size() <= 32 &&
+        data.branch is string && data.branch.size() >= 1 && data.branch.size() <= 64 &&
+        data.author is string && data.author.size() >= 1 && data.author.size() <= 160 &&
+        data.message is string && data.message.size() >= 1 && data.message.size() <= 400 &&
+        data.tierLevel in ['TIER_I', 'TIER_II', 'TIER_III', 'TIER_IV'] &&
+        data.ncsResolvedCount is int && data.ncsResolvedCount >= 0 && data.ncsResolvedCount <= 500 &&
+        data.vucProofHash is string && data.vucProofHash.size() >= 1 && data.vucProofHash.size() <= 128 &&
+        data.contentPreview is string && data.contentPreview.size() <= 40000 &&
+        data.createdAt is timestamp;
+    }
+
+    function isValidCadPatch(data, userId) {
+      return data.keys().hasAll([
+          'patchId',
+          'ownerId',
+          'auditId',
+          'version',
+          'tierLevel',
+          'normativeStandards',
+          'nurbsControlPointsCount',
+          'stlTrianglesCount',
+          'cadSha256',
+          'vucProofHash',
+          'remediationSvg',
+          'createdAt'
+        ]) &&
+        data.keys().hasOnly([
+          'patchId',
+          'ownerId',
+          'auditId',
+          'version',
+          'tierLevel',
+          'normativeStandards',
+          'nurbsControlPointsCount',
+          'stlTrianglesCount',
+          'cadSha256',
+          'vucProofHash',
+          'remediationSvg',
+          'createdAt'
+        ]) &&
+        isValidId(data.patchId) &&
+        isValidId(data.auditId) &&
+        data.ownerId is string && data.ownerId == userId &&
+        data.version is string && data.version.size() >= 1 && data.version.size() <= 32 &&
+        data.tierLevel in ['TIER_I', 'TIER_II', 'TIER_III', 'TIER_IV'] &&
+        data.normativeStandards is string && data.normativeStandards.size() >= 1 && data.normativeStandards.size() <= 500 &&
+        data.nurbsControlPointsCount is int && data.nurbsControlPointsCount >= 0 && data.nurbsControlPointsCount <= 10000 &&
+        data.stlTrianglesCount is int && data.stlTrianglesCount >= 0 && data.stlTrianglesCount <= 500000 &&
+        data.cadSha256 is string && data.cadSha256.size() >= 10 && data.cadSha256.size() <= 128 &&
+        data.vucProofHash is string && data.vucProofHash.size() >= 1 && data.vucProofHash.size() <= 128 &&
+        data.remediationSvg is string && data.remediationSvg.size() >= 1 && data.remediationSvg.size() <= 120000 &&
+        data.createdAt is timestamp;
+    }
+
+    match /users/{userId}/audits/{auditId} {
+      allow get: if isVerifiedOwner(userId) && isValidId(userId) && isValidId(auditId);
+      allow list: if isVerifiedOwner(userId) && isValidId(userId) && resource.data.ownerId == request.auth.uid;
+      allow create: if isVerifiedOwner(userId) &&
+        isValidId(userId) &&
+        isValidId(auditId) &&
+        isValidAudit(incoming(), userId) &&
+        incoming().auditId == auditId &&
+        incoming().createdAt == request.time;
+      allow update: if isVerifiedOwner(userId) &&
+        isValidId(userId) &&
+        isValidId(auditId) &&
+        isValidAudit(incoming(), userId) &&
+        incoming().auditId == existing().auditId &&
+        incoming().ownerId == existing().ownerId &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['patchVersion', 'summaryNote']);
+      allow delete: if isVerifiedOwner(userId) && isValidId(userId) && isValidId(auditId);
+    }
+
+    match /users/{userId}/commits/{commitId} {
+      allow get: if isVerifiedOwner(userId) && isValidId(userId) && isValidId(commitId);
+      allow list: if isVerifiedOwner(userId) && isValidId(userId) && resource.data.ownerId == request.auth.uid;
+      allow create: if isVerifiedOwner(userId) &&
+        isValidId(userId) &&
+        isValidId(commitId) &&
+        isValidCommit(incoming(), userId) &&
+        incoming().commitId == commitId &&
+        incoming().createdAt == request.time;
+      allow update: if false;
+      allow delete: if isVerifiedOwner(userId) && isValidId(userId) && isValidId(commitId);
+    }
+
+    match /users/{userId}/cadPatches/{patchId} {
+      allow get: if isVerifiedOwner(userId) && isValidId(userId) && isValidId(patchId);
+      allow list: if isVerifiedOwner(userId) && isValidId(userId) && resource.data.ownerId == request.auth.uid;
+      allow create: if isVerifiedOwner(userId) &&
+        isValidId(userId) &&
+        isValidId(patchId) &&
+        isValidCadPatch(incoming(), userId) &&
+        incoming().patchId == patchId &&
+        incoming().createdAt == request.time;
+      allow update: if false;
+      allow delete: if isVerifiedOwner(userId) && isValidId(userId) && isValidId(patchId);
+    }
+  }
+}

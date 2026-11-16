@@ -1,0 +1,262 @@
+{
+  "entities": {
+    "PersistedVisualAudit": {
+      "title": "PersistedVisualAudit",
+      "description": "Registro persistido de auditoria visual determinística por máscaras RGBA, procedência completa da imagem, Tier Data Center (I-IV) e prova criptográfica scoobiii/vuc.",
+      "type": "object",
+      "properties": {
+        "auditId": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "ownerId": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "sourceType": {
+          "type": "string",
+          "enum": ["image", "document", "url", "repository"]
+        },
+        "imageLabel": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "suppliedBy": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "suppliedDate": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "sourceName": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "sourceUrl": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "imageSha256": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "tierLevel": {
+          "type": "string",
+          "enum": ["TIER_I", "TIER_II", "TIER_III", "TIER_IV"]
+        },
+        "overallStatus": {
+          "type": "string",
+          "enum": ["NON_COMPLIANT", "PARTIAL", "COMPLIANT"]
+        },
+        "looseWireAreaPercent": {
+          "type": "number"
+        },
+        "exposedCopperAreaPercent": {
+          "type": "number"
+        },
+        "objectsCount": {
+          "type": "integer"
+        },
+        "vucExecutionId": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "vucProofHash": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "vucVerified": {
+          "type": "boolean"
+        },
+        "patchVersion": {
+          "type": "string",
+          "maxLength": 32
+        },
+        "summaryNote": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "auditId",
+        "ownerId",
+        "imageLabel",
+        "suppliedBy",
+        "suppliedDate",
+        "sourceName",
+        "sourceUrl",
+        "imageSha256",
+        "tierLevel",
+        "overallStatus",
+        "looseWireAreaPercent",
+        "exposedCopperAreaPercent",
+        "objectsCount",
+        "vucExecutionId",
+        "vucProofHash",
+        "vucVerified",
+        "createdAt"
+      ]
+    },
+    "PersistedDocumentCommit": {
+      "title": "PersistedDocumentCommit",
+      "description": "Commit versionado do documento técnico normativo com NCs resolvidas e hash de execução VUC.",
+      "type": "object",
+      "properties": {
+        "commitId": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "ownerId": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "version": {
+          "type": "string",
+          "maxLength": 32
+        },
+        "shortHash": {
+          "type": "string",
+          "maxLength": 32
+        },
+        "branch": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "author": {
+          "type": "string",
+          "maxLength": 160
+        },
+        "message": {
+          "type": "string",
+          "maxLength": 400
+        },
+        "tierLevel": {
+          "type": "string",
+          "enum": ["TIER_I", "TIER_II", "TIER_III", "TIER_IV"]
+        },
+        "ncsResolvedCount": {
+          "type": "integer"
+        },
+        "vucProofHash": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "contentPreview": {
+          "type": "string",
+          "maxLength": 40000
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "commitId",
+        "ownerId",
+        "version",
+        "shortHash",
+        "branch",
+        "author",
+        "message",
+        "tierLevel",
+        "ncsResolvedCount",
+        "vucProofHash",
+        "contentPreview",
+        "createdAt"
+      ]
+    },
+    "PersistedVisualPatch": {
+      "title": "PersistedVisualPatch",
+      "description": "Solução corretiva visual + CAD NURBS gerada ao aplicar patch versionado em uma imagem auditada.",
+      "type": "object",
+      "properties": {
+        "patchId": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "ownerId": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "auditId": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "version": {
+          "type": "string",
+          "maxLength": 32
+        },
+        "tierLevel": {
+          "type": "string",
+          "enum": ["TIER_I", "TIER_II", "TIER_III", "TIER_IV"]
+        },
+        "normativeStandards": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "nurbsControlPointsCount": {
+          "type": "integer"
+        },
+        "stlTrianglesCount": {
+          "type": "integer"
+        },
+        "cadSha256": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "vucProofHash": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "remediationSvg": {
+          "type": "string",
+          "maxLength": 120000
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "patchId",
+        "ownerId",
+        "auditId",
+        "version",
+        "tierLevel",
+        "normativeStandards",
+        "nurbsControlPointsCount",
+        "stlTrianglesCount",
+        "cadSha256",
+        "vucProofHash",
+        "remediationSvg",
+        "createdAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/users/{userId}/audits/{auditId}": {
+      "schema": { "$ref": "#/entities/PersistedVisualAudit" },
+      "description": "Auditorias visuais e de procedência armazenadas por engenheiro/PO autenticado."
+    },
+    "/users/{userId}/commits/{commitId}": {
+      "schema": { "$ref": "#/entities/PersistedDocumentCommit" },
+      "description": "Histórico de commits versionados do documento técnico normativo."
+    },
+    "/users/{userId}/cadPatches/{patchId}": {
+      "schema": { "$ref": "#/entities/PersistedVisualPatch" },
+      "description": "Patches visuais corretivos e modelos CAD/NURBS gerados a partir das NCs."
+    }
+  }
+}

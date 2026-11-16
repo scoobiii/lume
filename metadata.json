@@ -1,0 +1,6 @@
+{
+  "name": "QTA-NC Studio · Auditoria Normativa & Visão",
+  "description": "API e plataforma de auditoria de Não Conformidade (NC) normativa/documental, detecção e classificação por máscara de objetos em painéis QTA/ATS, versionamento Git e agente LLM open-source para Google Colab.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

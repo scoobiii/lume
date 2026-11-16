@@ -1,0 +1,20 @@
+# ==============================================================================
+# @file .dockerignore
+# @responsibility Exclusões de contexto para build Docker limpo e reproduzível.
+# @version 1.0.0
+# @date 2026-11-15
+# @directory /.dockerignore
+# @signature PO Zeh Sobrinho & Senior Agile DevOps Team (AI Framework)
+# ==============================================================================
+
+node_modules
+dist
+.git
+.gitignore
+.env
+.env.*
+!.env.example
+.aistudio
+*.log
+bun.lock
+data

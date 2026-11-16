@@ -1,0 +1,39 @@
+# ==============================================================================
+# @file docker-compose.yml
+# @responsibility Orquestração Docker Compose para execução local/produção do Evidencia-NC Studio na porta 3000 com volumes SQLite RAID-1.
+# @version 3.0.0
+# @date 2026-11-15
+# @directory /docker-compose.yml
+# @signature PO Zeh Sobrinho & Senior Agile DevOps Team (AI Framework)
+# ==============================================================================
+
+services:
+  lume-nc-studio:
+    container_name: lume-nc-auditor
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DISABLE_HMR=true
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - APP_URL=${APP_URL:-http://localhost:3000}
+      - RAID_DISK_A_DIR=/app/data/raid_mirror_a
+      - RAID_DISK_B_DIR=/app/data/raid_mirror_b
+    volumes:
+      - raid_mirror_a:/app/data/raid_mirror_a
+      - raid_mirror_b:/app/data/raid_mirror_b
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  raid_mirror_a:
+  raid_mirror_b:
